@@ -1,4 +1,4 @@
-import axios from "axios";
+import { delData } from "../services/note";
 
 const Show = ({ persons }) => {
   return (
@@ -11,9 +11,7 @@ const Show = ({ persons }) => {
 const DeleteButton = ({ persons }) => {
   const del = () => {
     if (window.confirm(`Delete ${persons.name} ?`)) {
-      axios
-        .delete(`http://localhost:3001/persons/${persons.id}`)
-        .then(window.location.reload());
+      delData(persons);
     }
   };
   return (
