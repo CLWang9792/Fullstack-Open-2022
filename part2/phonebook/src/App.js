@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
-import { Filter, PersonsForm, Persons } from "./components/Note";
+import {
+  Filter,
+  PersonsForm,
+  Persons,
+  SuccessNotification,
+  ErrorNotification,
+} from "./components/Note";
 import { getAll, create, update } from "./services/note";
+import "./index.css";
 
 const App = () => {
   const [newName, setNewName] = useState("");
@@ -8,11 +15,10 @@ const App = () => {
   const [persons, setPersons] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [search, setSearch] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
-    // axios.get("http://localhost:3001/persons").then((response) => {
-    //   setPersons(response.data);
-    // });
     getAll().then((response) => setPersons(response.data));
   }, []);
 
@@ -44,49 +50,53 @@ const App = () => {
     const phoneBookObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+      id: persons.length,
     };
 
-    const alreadyHave = persons.find((a) => a.name === newName);
-    const id = persons.indexOf(alreadyHave) + 1;
+    const id = persons.findIndex((x) => x.name === newName);
     const upDate = {
       name: newName,
       number: newNumber,
       id: id,
     };
 
-    if (alreadyHave !== undefined) {
+    if (id !== -1) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with new one?`
         )
       ) {
-        // axios
-        //   .put(`http://localhost:3001/persons/${id}`, update)
-        //   .then((response) => {
-        //     setPersons(
-        //       persons.map((persons) =>
-        //         persons.id !== id ? persons : response.data
-        //       )
-        //     );
-        //   });
         update(id, upDate).then((response) => {
           setPersons(
             persons.map((persons) =>
               persons.id !== id ? persons : response.data
             )
           );
+          setSuccessMessage(`${newName}'s number has been updated`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
         });
       }
     } else {
-      // axios
-      //   .post("http://localhost:3001/persons", phoneBookObject)
-      //   .then((response) => {
-      //     setPersons(persons.concat(response.data));
-      //   });
-      create(phoneBookObject).then((response) => {
-        setPersons(persons.concat(response.data));
-      });
+      create(phoneBookObject)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setSuccessMessage(`Added ${newName}`);
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(`${newName} was already added`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000).then(
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000)
+          );
+        });
     }
     setNewName("");
     setNewNumber("");
@@ -95,6 +105,8 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <SuccessNotification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
       <Filter handleFilter={handleFilter} />
       <h3>Add a new</h3>
       <PersonsForm
@@ -105,7 +117,12 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} filterData={filterData} search={search} />
+      <Persons
+        persons={persons}
+        filterData={filterData}
+        search={search}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

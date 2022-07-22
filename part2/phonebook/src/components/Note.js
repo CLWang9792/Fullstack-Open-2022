@@ -1,17 +1,18 @@
 import { delData } from "../services/note";
 
-const Show = ({ persons }) => {
+const Show = ({ persons, setErrorMessage }) => {
   return (
     <li>
-      {persons.name} {persons.number} <DeleteButton persons={persons} />
+      {persons.name} {persons.number}
+      <DeleteButton persons={persons} setErrorMessage={setErrorMessage} />
     </li>
   );
 };
 
-const DeleteButton = ({ persons }) => {
+const DeleteButton = ({ persons, setErrorMessage }) => {
   const del = () => {
     if (window.confirm(`Delete ${persons.name} ?`)) {
-      delData(persons);
+      delData(persons, setErrorMessage);
     }
   };
   return (
@@ -52,13 +53,17 @@ const PersonsForm = ({
   );
 };
 
-const Persons = ({ persons, filterData, search }) => {
+const Persons = ({ persons, filterData, search, setErrorMessage }) => {
   if (search === "") {
     return (
       <div>
         <ul>
           {persons.map((persons) => (
-            <Show key={persons.name} persons={persons} />
+            <Show
+              key={persons.name}
+              persons={persons}
+              setErrorMessage={setErrorMessage}
+            />
           ))}
         </ul>
       </div>
@@ -68,7 +73,11 @@ const Persons = ({ persons, filterData, search }) => {
       <div>
         <ul>
           {filterData.map((persons) => (
-            <Show key={persons.name} persons={persons} />
+            <Show
+              key={persons.name}
+              persons={persons}
+              setErrorMessage={setErrorMessage}
+            />
           ))}
         </ul>
       </div>
@@ -76,4 +85,18 @@ const Persons = ({ persons, filterData, search }) => {
   }
 };
 
-export { Filter, PersonsForm, Persons };
+const SuccessNotification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+  return <div className="success">{message}</div>;
+};
+
+const ErrorNotification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+  return <div className="error">{message}</div>;
+};
+
+export { Filter, PersonsForm, Persons, SuccessNotification, ErrorNotification };
