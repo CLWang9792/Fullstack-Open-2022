@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Filter, PersonsForm, Persons } from "./components/Note";
+import axios from "axios";
 
 const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [persons, setPersons] = useState([]);
   const [filterData, setFilterData] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     axios.get("http://localhost:3001/persons").then((response) => {
@@ -23,8 +24,10 @@ const App = () => {
     });
     if (searchWord === "") {
       setFilterData([]);
+      setSearch("");
     } else {
       setFilterData(newFilter);
+      setSearch("have search word");
     }
   };
 
@@ -44,13 +47,38 @@ const App = () => {
     };
 
     const alreadyHave = persons.find((a) => a.name === newName);
+    const id = persons.indexOf(alreadyHave) + 1;
+    const update = {
+      name: newName,
+      number: newNumber,
+      id: id,
+    };
 
     if (alreadyHave !== undefined) {
-      return window.alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with new one?`
+        )
+      ) {
+        console.log(id);
+        axios
+          .put(`http://localhost:3001/persons/${id}`, update)
+          .then((response) => {
+            setPersons(
+              persons.map((persons) =>
+                persons.id !== id ? persons : response.data
+              )
+            );
+          })
+          .catch((error) => console.log("fail"));
+      }
     } else {
-      setPersons(persons.concat(phoneBookObject));
+      axios
+        .post("http://localhost:3001/persons", phoneBookObject)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+        });
     }
-
     setNewName("");
     setNewNumber("");
   };
@@ -58,7 +86,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Filter handleFilter={handleFilter} filterData={filterData} />
+      <Filter handleFilter={handleFilter} />
       <h3>Add a new</h3>
       <PersonsForm
         add={add}
@@ -68,7 +96,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={persons} filterData={filterData} search={search} />
     </div>
   );
 };
