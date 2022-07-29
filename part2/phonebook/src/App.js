@@ -37,7 +37,6 @@ const App = () => {
       setSearch("have search word");
     }
   };
-
   const handleNameChange = (event) => {
     setNewName(event.target.value);
   };
@@ -50,26 +49,28 @@ const App = () => {
     const phoneBookObject = {
       name: newName,
       number: newNumber,
-      id: persons.length,
+      Date: new Date(),
+      id: Math.floor(Math.random() * Math.pow(2, 52)),
     };
+    const personIdex = persons.findIndex((x) => x.name === newName);
 
-    const id = persons.findIndex((x) => x.name === newName);
-    const upDate = {
-      name: newName,
-      number: newNumber,
-      id: id,
-    };
-
-    if (id !== -1) {
+    if (personIdex !== -1) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with new one?`
         )
       ) {
-        update(id, upDate).then((response) => {
+        const personId = persons[personIdex].id;
+        const upDate = {
+          name: newName,
+          number: newNumber,
+          Date: new Date(),
+          id: personId,
+        };
+        update(personId, upDate).then((response) => {
           setPersons(
             persons.map((persons) =>
-              persons.id !== id ? persons : response.data
+              persons.name !== newName ? persons : response.data
             )
           );
           setSuccessMessage(`${newName}'s number has been updated`);
@@ -88,14 +89,18 @@ const App = () => {
           }, 5000);
         })
         .catch((error) => {
-          setErrorMessage(`${newName} was already added`);
-          setTimeout(() => {
-            setErrorMessage(null);
-          }, 5000).then(
+          console.log(error.response.data);
+          if (newName === "" || newNumber === "") {
+            setErrorMessage(`Name and Number cannot be blank`);
             setTimeout(() => {
-              window.location.reload();
-            }, 1000)
-          );
+              setErrorMessage(null);
+            }, 5000);
+          } else {
+            setErrorMessage(`Wrong Format`);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+          }
         });
     }
     setNewName("");
@@ -103,6 +108,7 @@ const App = () => {
   };
 
   return (
+    //需要添加輸入名字、號碼的格式
     <div>
       <h1>Phonebook</h1>
       <SuccessNotification message={successMessage} />
@@ -117,12 +123,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons
-        persons={persons}
-        filterData={filterData}
-        search={search}
-        setErrorMessage={setErrorMessage}
-      />
+      <Persons persons={persons} filterData={filterData} search={search} />
     </div>
   );
 };

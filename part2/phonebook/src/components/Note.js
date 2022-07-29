@@ -1,18 +1,20 @@
 import { delData } from "../services/note";
 
-const Show = ({ persons, setErrorMessage }) => {
+const Show = ({ persons }) => {
   return (
-    <li>
-      {persons.name} {persons.number}
-      <DeleteButton persons={persons} setErrorMessage={setErrorMessage} />
-    </li>
+    <div>
+      <li>
+        {persons.name}: {persons.number}
+        <DeleteButton persons={persons} />
+      </li>
+    </div>
   );
 };
 
-const DeleteButton = ({ persons, setErrorMessage }) => {
+const DeleteButton = ({ persons }) => {
   const del = () => {
     if (window.confirm(`Delete ${persons.name} ?`)) {
-      delData(persons, setErrorMessage);
+      delData(persons);
     }
   };
   return (
@@ -53,17 +55,13 @@ const PersonsForm = ({
   );
 };
 
-const Persons = ({ persons, filterData, search, setErrorMessage }) => {
+const Persons = ({ persons, filterData, search }) => {
   if (search === "") {
     return (
       <div>
         <ul>
           {persons.map((persons) => (
-            <Show
-              key={persons.name}
-              persons={persons}
-              setErrorMessage={setErrorMessage}
-            />
+            <Show key={persons.name} persons={persons} />
           ))}
         </ul>
       </div>
@@ -73,11 +71,7 @@ const Persons = ({ persons, filterData, search, setErrorMessage }) => {
       <div>
         <ul>
           {filterData.map((persons) => (
-            <Show
-              key={persons.name}
-              persons={persons}
-              setErrorMessage={setErrorMessage}
-            />
+            <Show key={persons.name} persons={persons} />
           ))}
         </ul>
       </div>
