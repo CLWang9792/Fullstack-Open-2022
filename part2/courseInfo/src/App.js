@@ -1,7 +1,6 @@
-import Course from "./components/Note"
+import Course from './components/Note'
 
 const App = ({ course }) => {
-
   return (
     <div>
       <Course course={course} />

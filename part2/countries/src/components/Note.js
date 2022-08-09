@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react'
 
 const Weather = ({ weatherData }) => {
-  const icon = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
+  const icon = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`
   return (
     <div>
       <h3>Weather in {weatherData.name}</h3>
       <p>
-        temperature {weatherData.main.temp} {"\u2103"}{" "}
+        temperature {weatherData.main.temp} {'\u2103'}{' '}
         {weatherData.weather[0].main}
       </p>
-      <img src={icon} alt="weather icon" />
+      <img src={icon} alt='weather icon' />
       <p>wind {weatherData.wind.speed} m/s</p>
     </div>
-  );
-};
+  )
+}
 
 const Show = ({ filterData, weatherData }) => {
   if (filterData.length > 10) {
@@ -21,19 +21,19 @@ const Show = ({ filterData, weatherData }) => {
       <div>
         <p>Too many matches, specify another filter</p>
       </div>
-    );
+    )
   } else if (filterData.length === 1) {
-    const languages = Object.values(filterData[0].languages);
+    const languages = Object.values(filterData[0].languages)
 
     return (
       <div>
-        {filterData.map((filterData) => (
+        {filterData.map(filterData => (
           <div key={filterData.name.common}>
             <h1>{filterData.name.common}</h1>
             <div>
               <p>Capital: {filterData.capital}</p>
               <p>
-                Area: {filterData.area} {"\u33A1"}
+                Area: {filterData.area} {'\u33A1'}
               </p>
             </div>
             <div>
@@ -44,34 +44,37 @@ const Show = ({ filterData, weatherData }) => {
                 <li>{languages}</li>
               </div>
             ))}
-            <div>{filterData.flag}</div>
+            <div>
+              <h3>Flag:</h3>
+              <img className='infoFlag' src={filterData.flags.svg} alt='flag' />
+            </div>
             <Weather weatherData={weatherData} />
           </div>
         ))}
       </div>
-    );
+    )
   } else {
     return (
       <ul>
-        {filterData.map((filterData) => (
+        {filterData.map(filterData => (
           <li key={filterData.name.common}>
             {filterData.name.common}
             {filterData.flag}
           </li>
         ))}
       </ul>
-    );
+    )
   }
-};
+}
 
 const Filter = ({ handleFilter, filterData, weatherData }) => {
   return (
     <div>
-      find countries
-      <input placeholder="Search ..." onChange={handleFilter} />
+      find countries {'  '}
+      <input placeholder='Search ...' onChange={handleFilter} />
       <Show filterData={filterData} weatherData={weatherData} />
     </div>
-  );
-};
+  )
+}
 
-export { Filter };
+export { Filter }

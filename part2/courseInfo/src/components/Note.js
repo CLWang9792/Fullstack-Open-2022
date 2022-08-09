@@ -18,41 +18,38 @@ const SubHeader = ({ course }) => {
 
 const Part = ({ part }) => {
   return (
-      <p>
-        {part.name} {part.exercises}
-      </p>
+    <p>
+      {part.name} {part.exercises}
+    </p>
   )
 }
 
 const Content = ({ part }) => {
   return (
     <div>
-      {part.map(part =>
+      {part.map(part => (
         <Part key={part.id} part={part} />
-      )}
+      ))}
     </div>
   )
 }
 
 const Total = ({ part }) => {
-  const total = part.map(item => item.exercises)
-                    .reduce((a, b) => a + b)
-  return (
-    <p>total of {total} exercises</p>
-  ) 
+  const total = part.map(item => item.exercises).reduce((a, b) => a + b)
+  return <p>total of {total} exercises</p>
 }
 
 const Course = ({ course }) => {
   return (
     <div>
-      <Header tital={"Web development curriculum"} />
-      {course.map(course => 
-      <>
-        <SubHeader key={course.id} course={course} />
-        <Content key={course.id} part={course.part} />
-        <Total key={course.id} part={course.part} />
-      </>
-      )}
+      <Header tital={'Web development curriculum'} />
+      {course.map(course => (
+        <>
+          <SubHeader key={course.id} course={course} />
+          <Content key={course.id} part={course.part} />
+          <Total key={course.id} part={course.part} />
+        </>
+      ))}
     </div>
   )
 }
